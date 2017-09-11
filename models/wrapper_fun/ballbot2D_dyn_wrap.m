@@ -1,0 +1,16 @@
+function [ dx ] = ballbot2D_dyn_wrap(t,x,u,params)
+
+    % Unpack variables
+    theta = x(1);
+    phi = x(2);
+    dtheta = x(3);
+    dphi = x(4);
+    
+    % Compute state derivative
+    dx = autofun_dx_ode_ballbot2D(  theta,phi,dtheta,dphi,...
+                                    u,...
+                                    params.M_body,params.M_ball,...
+                                    params.I_body,params.I_ball,...
+                                    params.L,params.r,...
+                                    params.grav);
+end
