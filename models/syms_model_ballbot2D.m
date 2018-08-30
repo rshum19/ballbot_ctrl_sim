@@ -1,10 +1,11 @@
-% FILENAME: syms_model_ballbot2D.m
+ % FILENAME: syms_model_ballbot2D.m
 % AUTHOR:   Roberto Shu
 % LAST EDIT: 8/26/2017
 %
 % DESCRIPTION:
 % This script will derive the equation of motion using the 
-% Lagrian Dynamics method of a 2D Ballbot model
+% Lagrian Dynamics method of a 2D Ballbot model. Coordinate scheme based on
+% [3]
 % 
 % The 3 different notations for the equation of motions are derived as in 
 %
@@ -39,6 +40,10 @@
 % [1] Robot Dynamics and Control by Spong and Vidyasagar (1989), page 142, Eq. (6.3.12)
 % [2] Westervelt, Eric R., et al. Feedback control of dynamic 
 %     bipedal robot locomotion. Vol. 28. CRC press, 2007.
+% [3] Nagarajan, Umashankar, George Kantor, and Ralph L. Hollis. 
+%     "Trajectory planning and control of an underactuated dynamically stable single 
+%     spherical wheeled mobile robot." Robotics and Automation, 2009. ICRA'09. IEEE 
+%     International Conference on. IEEE, 2009.
 
 %% ----------------------------------------------------------
 %   INITIALIZE WORKSPACE
@@ -77,7 +82,7 @@ p_ball = [r*(theta + phi); 0];
 v_ball = jacobian(p_ball,q)*dq;
 
 % Body CoM position and velocity 
-p_body = [-L*sin(phi); L*cos(phi)] + p_ball;
+p_body = [L*sin(phi); L*cos(phi)] + p_ball;
 v_body = jacobian(p_body,q)*dq;
 
 %% ----------------------------------------------------------
@@ -96,10 +101,13 @@ PE = simplify(PE);
 Lag = KE - PE;
 
 % Vector of actuated state variables
-gamma_vec = [ theta ]; 
+gamma_vec = [ theta]; 
+
+% D(q)*ddq + C(q)*dq + G(q) = B*u
+[D_mtx,C_mtx,G_vec,B_mtx] = EulerLagrangeEoM_method1(KE,PE,q,dq, gamma_vec);
 
 % Lagrangian equations of motion of the form
-% D(q)*dqq + H(q,dq) = B*u + J'*F
+% D(q)*ddq + H(q,dq) = B*u + J'*F
 [ D, H, B ] = EulerLagrangeEoM_method2( Lag, q, dq, ddq, gamma_vec);
 ddq = D\(B*u - H);
 
@@ -108,10 +116,21 @@ ddq = D\(B*u - H);
 [ x, f, g ] = EoM2CntrlAffine( D, H, B, q, dq );
 dx = f+g*u;
 
+%% ---------------------------------------------------------
+%   CLOSED LOOP W/ PID DYAMICS
+% -----------------------------------------------------------
+syms Theta real
+syms theta_r dtheta_r itheta_r real
+syms Kp Ki Kd real
+
+fbar = [ theta; dtheta; dphi; -D\H];
+
+gbar = [ 0; 0; 0; D\(B*(-Kp*L*(theta-theta_r) - Kd*(dtheta - dtheta_r) - Ki*(Theta - itheta_r)))];
+
 %% ----------------------------------------------------------
 %   SAVE MODEL
 % -----------------------------------------------------------
-save(strcat('syms_model_',modelName,'.mat'));
+%save(strcat('syms_model_',modelName,'.mat'));
 
 %% ----------------------------------------------------------
 %   GENERATE MATLAB FUNCTIONS

@@ -1,4 +1,4 @@
-M_ballfunction [params,unpacked_params] = get_ballbot2D_model_params()
+function [params,unpacked_params] = get_ballbot2D_model_params()
 
     params.M_ball  = 2.437; %kg
     params.M_body  = 51.663126; %kg

@@ -29,7 +29,8 @@ f = [dq; -D\H];
 f = simplify(f);
 
 % Construct input matrix
-g = [zeros(size(dq)); D\B];
+%g = [zeros(size(dq)); D\B];
+g = [zeros(size(B)); D^(-1)*B];
 g = simplify(g);
 end
 

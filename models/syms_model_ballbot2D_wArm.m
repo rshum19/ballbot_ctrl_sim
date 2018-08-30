@@ -1,3 +1,4 @@
+clear; clc;
 %% ----------------------------------------------------------
 %   MODEL VARIABLES
 % -----------------------------------------------------------
@@ -8,7 +9,7 @@ syms tau tau_a real
 %% Name system model
 modelName = 'planarBB_wArm';
 
-% Configuration coordintes and velocities
+% State vectors: Configuration coordintes and velocities
 % theta and phi are in radias, positive counter-clockwise
 q = [theta; phi; alpha];
 dq = [dtheta; dphi; dalpha];
@@ -20,15 +21,18 @@ params_vec = [M_body M_ball M_arm I_body I_ball I_arm L r L_armjoint l_arm grav]
 %% ----------------------------------------------------------
 %   SYSTEM KINEMATICS
 % -----------------------------------------------------------
+derivative = @(f)(jacobian(f,q)*dq); % Chain rule
+
 % Define state equilibirum point
 x_eq = [zeros(size(q)); zeros(size(dq))];
 
 % Ball position and velocity
 p_ball = [r*(theta + phi); 0];
+v_ball2 = derivative(p_ball);
 v_ball = jacobian(p_ball,q)*dq;
 
 % Body CoM position and velocity 
-p_body = [-L*sin(phi); L*cos(phi)] + p_ball;
+p_body = [L*sin(phi); L*cos(phi)] + p_ball;
 v_body = jacobian(p_body,q)*dq;
 
 % Arm CoM position and velocity
@@ -56,12 +60,16 @@ PE = simplify(PE_body + PE_arm);
 % Lagrangian
 Lag = KE - PE;
 
+% Vector of controlled/actuated state variables
+gamma_vec = [theta, alpha];
+
+% D(q)*ddq + C(q)*dq + G(q) = B*u
+[D_mtx,C_mtx,G_vec,B_mtx] = EulerLagrangeEoM_method1(KE,PE,q,dq, gamma_vec);
+
 % Lagrangian equations of motion of the form
 % D(q)*dqq + H(q,dq) = B*u + J'*F
-LHS = jacobian(jacobian(Lag, dq)', [q;dq])*[dq;ddq]  -  jacobian(Lag, q)' ;
-D = jacobian(LHS, ddq) ;
-H = simplify(LHS - D*ddq) ;
-B = [1 0; 0 0; 0 1;];
+[ D, H, B ] = EulerLagrangeEoM_method2( Lag, q, dq, ddq, gamma_vec);
+ddq = D\(B*u - H);
 
 % ODE Form (affine state space model)
 % dx = f(x) + g(x)*u
