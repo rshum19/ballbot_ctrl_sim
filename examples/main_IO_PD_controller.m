@@ -13,7 +13,7 @@ X0 = [theta;phi;dtheta;dphi];
 
 %% Simulation Options
 sim_opts.ode_type = 1;
-sim_opts.animate = 0;
+sim_opts.animate = 1;
 sim_opts.animate_fun = @draw_bb;
 sim_opts.animate_speed = 1;
 sim_opts.save_opts.save = 0;
