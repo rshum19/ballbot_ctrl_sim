@@ -13,7 +13,9 @@ Matlab simulation of the CMU Ballbot
 ## Models Available 
 
 ## Running Examples
-Example simulation are stored in the direction `ballbot_ctrl_sim/examples`. Use
+Example simulation are stored in the direction `ballbot_ctrl_sim/examples`. You can run any script inside it and it should simulate ballbot.
+
+If you want to simulate ballbot with your own controller I suggest creating a very similar script to the one in the examples directory. 
 
 ## Changing Model Parameters
 Ballbot model parameteres are stored in  `models\get_ballbot2D_model_params.m`
@@ -21,3 +23,4 @@ Ballbot model parameteres are stored in  `models\get_ballbot2D_model_params.m`
 Feel free to change the values in this script to match your system
 
 ## Making Your Own Controllers
+To make your own conntroller you need to create a new script under the `controllers` directory the follows a similar structure
