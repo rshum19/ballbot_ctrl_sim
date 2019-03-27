@@ -188,7 +188,7 @@ function sim_ballbot2D(X0, sim_params, sim_opts)
             plot(t_out,d1);
             ylabel('d1');
         else
-            sim_opts.plot_fun(t_out,X_out,X_d_out,u_out,phi_des,kerr,V_eps,psi0,psi1,sim_params.model_params);
+            sim_opts.plot_fun(t_out,X_out,X_d_out,u_out,u_fb,phi_des,sim_params.model_params);
         end
     end
     

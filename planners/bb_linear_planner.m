@@ -11,7 +11,7 @@ function [x_d] = bb_linear_planner(t,x)
     elseif(t<20)
         
         dtheta_d = 0;
-        theta_d = dtheta_d*(t-10);
+        theta_d = 0;%dtheta_d*(t-10);
         %theta_d = 2/0.105838037*0;
         
         dphi_d = 0;
