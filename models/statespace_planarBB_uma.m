@@ -12,18 +12,18 @@ dtheta = dq(1);
 dphi = dq(2);
 
 % Ballbot Parameters
-Mw  = 2.437; %kg
-Mb  = 51.663126; %kg
+M_ball  = 2.437; %kg
+M_body  = 51.663126; %kg
 r = 0.105838037; %m
-g = 9.81; %m/s^2
-l = 0.69; %m
-Ib = 12.5905; %kg m^2
-Iw = 0.0174; %kg m^2
+grav = 9.81; %m/s^2
+L = 0.69; %m
+I_body = 12.5905; %kg m^2
+I_ball = 0.0174; %kg m^2
 
 
-alpha = Iw + (Mw + Mb)*r^2;
-beta = Mb*l*r;
-gamma = Ib + Mb*l^2;
+alpha = I_ball + (M_ball + M_body)*r^2;
+beta = M_body*L*r;
+gamma = I_body + M_body*L^2;
 
 M = [	alpha,	alpha + beta*cos(phi);...
 		alpha + beta*cos(phi),	alpha + gamma + 2*beta*cos(phi)];
@@ -32,7 +32,7 @@ C = [ 	-beta*sin(phi)*dphi^2;...
 		-beta*sin(phi)*dphi^2];
 
 G = [	0;...
-		-beta*g*sin(phi)/r];
+		-beta*grav*sin(phi)/r];
 
 U = [u; 0];
 

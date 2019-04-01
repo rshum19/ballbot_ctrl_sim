@@ -39,13 +39,8 @@ function plots_planarBB_simple(t_out,X_out,X_d_out,u_out,u_fb,phi_des,model_para
     
     % Control input
     figure(3)
-    subplot(2,1,1)
     plot(t_out,u_out);
     xlabel('Time (sec)');
-    ylabel('U_IO (Nm)');
-
-    subplot(2,1,2)
-    plot(t_out,u_fb);
-    ylabel('u_PID (Nm)')
+    ylabel('U (Nm)');
 
 end

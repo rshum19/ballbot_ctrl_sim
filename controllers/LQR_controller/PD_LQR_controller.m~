@@ -1,7 +1,7 @@
-function [u,uparts] = PID_PD_controller(t,x,x_d,params)
-% IO_PD_controller  I/O feedback linearized controller with an outer loop PD
+function [u,uparts] = PD_LQR_controller(t,x,x_d,params)
+% LQR_controller  LQR controller 
 % AUTHOR:   Roberto Shu
-% LAST EDIT: 8/26/2017    
+% LAST EDIT: 3/31/2019    
     %% ----------------------------------------------------------
     %   Unpack actual and desired state vectors
     % -----------------------------------------------------------    
@@ -12,45 +12,32 @@ function [u,uparts] = PID_PD_controller(t,x,x_d,params)
     dphi = x(4);
     
     % Desired state
-    theta_d = x_d.ref_traj(1);
-    phi_d = x_d.ref_traj(2);
-    dtheta_d = x_d.ref_traj(3);
-    dphi_d = x_d.ref_traj(4);
+    theta_d = x_d.ref_traj(1)*0;
+    phi_d = x_d.ref_traj(2)*0;
+    dtheta_d = x_d.ref_traj(3)*0;
+    dphi_d = x_d.ref_traj(4)*0;
     
+    % Error state vector
+    err = [theta-theta_d; phi-phi_d; dtheta-dtheta_d;dphi-dphi_d];
+
     %% ----------------------------------------------------------
     %   Outer loop control
     % ----------------------------------------------------------- 
-    % Aim: get a desired lean angle (phi_des) to track desired ball
-    % position using a simple PD controller
-    
-    % Error state vector
-	err = [theta-theta_d; dtheta - dtheta_d;...
-		phi-phi_d; dphi-dphi_d];
-	
-    % Control gains 
-    %K_ilc = [0.01 0.015 0 0];
-    K_ilc = [0.004 0.009 0 0];
-    
-    % Augmented desired lean angle
-	phi_des = phi_d + K_ilc*err;
-    phi_des = 0;
+    K_sk =[0.03 0 0.002 0];
+    phi_sk = -K_sk*err;
+   
+    phi_des = phi_d + phi_sk;
     
     %% ----------------------------------------------------------
     %   Inner loop control
     % ----------------------------------------------------------- 
-    % Aim: I/O feedback linearized controller with PD to track desired lean angles
-    % to balance and navigate
+    err = [theta-theta_d; phi-phi_d; dtheta-dtheta_d;dphi-dphi_d];
     
-    % Output function    
-    Kp = -10;
-	Kd = 0*10;
-	Ki = 80;
-    Klqr =  1.0e+04* [-0.0866    1.8234   -0.0532    0.5353
     
-	phie = phi - phi_des;
-	u = Kp*phie - Kd*(dtheta-dtheta_d);% + Ki*phie_agg;
-	%phie_agg = phie_agg + phie;
-	%phie_hist(i) = phie;
+    Klqr = [-1.0000 -173.1954   -2.0268  -48.6683]; % LQR Gains for uma's model
+    
+    % Compute input via Full State Feedback control law
+    u = -Klqr*err;
     
     % Bound input
 	if(abs(u)>params.u_max)

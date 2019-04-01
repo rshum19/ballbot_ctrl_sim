@@ -13,7 +13,6 @@ function [ D, H, B ] = EulerLagrangeEoM_method2( Lag, q, dq, ddq, gamma)
 %   D(q)*dqq + H(q,dq) = B*u + J(q)'*F_external
 %
 
-
 LHS = jacobian(jacobian(Lag, dq)', [q;dq])*[dq;ddq]  -  jacobian(Lag, q)' ;
 
 % Mass-Inertia matrix

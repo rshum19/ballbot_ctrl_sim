@@ -111,6 +111,8 @@ gamma_vec = [ theta];
 [ D, H, B ] = EulerLagrangeEoM_method2( Lag, q, dq, ddq, gamma_vec);
 ddq = D\(B*u - H);
 
+dX = [dq;ddq];
+
 % ODE Form (control affine state space model)
 % dx = f(x) + g(x)*u
 [ x, f, g ] = EoM2CntrlAffine( D, H, B, q, dq );
@@ -130,12 +132,12 @@ gbar = [ 0; 0; 0; D\(B*(-Kp*L*(theta-theta_r) - Kd*(dtheta - dtheta_r) - Ki*(The
 %% ----------------------------------------------------------
 %   SAVE MODEL
 % -----------------------------------------------------------
-%save(strcat('syms_model_',modelName,'.mat'));
+save(strcat('syms_model_',modelName,'.mat'));
 
 %% ----------------------------------------------------------
 %   GENERATE MATLAB FUNCTIONS
 % -----------------------------------------------------------
-% Auto-generate efficient matlab function to compute dynamics
+%Auto-generate efficient matlab function to compute dynamics
 FolderName = 'autogen_fun';
 if ~exist(FolderName,'dir')
     warning('directory does not exist:%s\n It will be created.', FolderName)
@@ -144,4 +146,5 @@ end
 
 matlabFunction(dx, 'File',fullfile('autogen_fun',strcat('autofun_dx_ode_',modelName)),'Vars',horzcat(q',dq',u',params_vec));
 matlabFunction(ddq, 'File',fullfile('autogen_fun',strcat('autofun_ddq_lagr_',modelName)),'Vars',horzcat(q',dq',u',params_vec));
+matlabFunction(dX, 'File',fullfile('autogen_fun',strcat('autofun_dx_lagr_',modelName)),'Vars',horzcat(q',dq',u',params_vec));
 matlabFunction(p_ball,p_body, 'File',fullfile('autogen_fun',strcat('autofun_kinematics_',modelName)),'Vars',horzcat(q',dq',u',params_vec));
