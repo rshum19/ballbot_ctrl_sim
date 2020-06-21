@@ -35,3 +35,13 @@ Run the test script
 ```
 test_ballbot2D_w2DOFArm_dyns.m
 ```
+
+**Controllers**
+
+Currently I have made 2 controllers for this model that can be found in `ballbot_ctr_sim/controllers/w2DOFArms_controllers`. 
+The controllers are as follows:
+
+ - `LQR_balance_controller.m`, this is an LQR based controller to balance the robot. This controller was take from the model with no arms, and hsould be updated to compensate for the arm dynamics. 
+ - `PD_Arm_controller.m`, this implements a PD controller for the 2 arm joints. You can change the gains of the PD controller inside this file. 
+
+These two controllers are used in `test_ballbot2D_w2DOFArm_dyns.m` and should be updated. 
