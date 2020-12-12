@@ -118,6 +118,24 @@ dX = [dq;ddq];
 [ x, f, g ] = EoM2CntrlAffine( D, H, B, q, dq );
 dx = f+g*u;
 
+%% ----------------------------------------------------------
+%   LINEARIZE SYSTEM DYNAMICS
+% -----------------------------------------------------------
+fprintf('Linearizing model...');
+
+% Linearized system
+A_lin = jacobian(f,x);
+B_lin = jacobian(g*u,u);
+
+% Substitute equilibrium point
+A_lin = subs(A_lin,x,zeros(size(x)));
+A_lin = simplify(A_lin);
+B_lin = subs(B_lin,x,zeros(size(x)));
+B_lin = subs(B_lin,u,zeros(size(u)));
+B_lin = simplify(B_lin);
+
+fprintf('DONE\n');
+
 %% ---------------------------------------------------------
 %   CLOSED LOOP W/ PID DYAMICS
 % -----------------------------------------------------------
